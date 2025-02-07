@@ -92,5 +92,38 @@ router.post("/restart-room", async (req, res) => {
   }
 })
 
+router.post("/leave-room", async (req, res) => {
+  try {
+    const { roomId, playerName } = req.body;
+    const room = await Room.findOne({ roomId });
+
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+
+    // Remove player from the room
+    if (room.X_name === playerName) {
+      room.X_name = null;
+    } else if (room.O_name === playerName) {
+      room.O_name = null;
+    } else {
+      return res.status(400).json({ error: "Player not in room" });
+    }
+
+    // If both players left, delete the room
+    if (!room.X_name && !room.O_name) {
+      await Room.deleteOne({ roomId });
+      return res.json({ message: "Room deleted as both players left" });
+    }
+
+    await room.save();
+    res.json({ message: "Player left the room", room });
+  } catch (error) {
+    console.error("Error leaving room:", error);
+    res.status(500).json({ error: "Failed to leave room" });
+  }
+});
+
+
 export default router
 
