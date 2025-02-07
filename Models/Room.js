@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const roomSchema = new mongoose.Schema({
+const roomssSchema = new mongoose.Schema({
   roomId: { type: String, required: true, unique: true },
   squares: { type: Array, required: true },
   xIsNext: { type: Boolean, required: true },
@@ -11,7 +11,7 @@ const roomSchema = new mongoose.Schema({
   O_name: { type: String },
 })
 
-const Room = mongoose.model("Room", roomSchema)
+const Room = mongoose.model("Room", roomssSchema)
 
 export default Room
 
