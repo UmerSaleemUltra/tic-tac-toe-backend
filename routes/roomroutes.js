@@ -16,6 +16,7 @@ router.post("/create-room", async (req, res) => {
       winner: null,
       tie: false,
       X_name: playerName,
+      messages: []
     })
 
     await newRoom.save()
@@ -51,7 +52,7 @@ router.post("/update-room", async (req, res) => {
   }
 })
 
-// Get Room State (should be a GET request, not POST)
+// Get Room State
 router.get("/room/:roomId", async (req, res) => {
   try {
     const room = await Room.findOne({ roomId: req.params.roomId })
@@ -124,6 +125,35 @@ router.post("/leave-room", async (req, res) => {
   }
 });
 
+// Send Message
+router.post("/send-message", async (req, res) => {
+  try {
+    const { roomId, playerName, message } = req.body;
+    
+    if (!roomId || !playerName || !message) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const room = await Room.findOne({ roomId });
+    
+    if (!room) {
+      return res.status(404).json({ error: "Room not found" });
+    }
+
+    const newMessage = {
+      playerName,
+      message,
+      timestamp: new Date()
+    };
+
+    room.messages.push(newMessage);
+    await room.save();
+
+    res.json({ message: "Message sent successfully", newMessage });
+  } catch (error) {
+    console.error("Error sending message:", error);
+    res.status(500).json({ error: "Failed to send message" });
+  }
+});
 
 export default router
-
