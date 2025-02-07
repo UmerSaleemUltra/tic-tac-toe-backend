@@ -4,7 +4,7 @@ import db from './Config/db.js';
 import router from './routes/roomroutes.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT =  3000;
 
 // Middleware
 app.use(cors());
@@ -23,9 +23,11 @@ db.connection.on('error', (err) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -34,4 +36,3 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
-
