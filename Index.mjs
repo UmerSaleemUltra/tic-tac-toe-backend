@@ -4,7 +4,6 @@ import db from './Config/db.js';
 import router from './routes/roomroutes.js';
 
 const app = express();
-const PORT =  3000;
 
 // Middleware
 app.use(cors());
@@ -22,17 +21,14 @@ db.connection.on('error', (err) => {
     console.error('Database connection error:', err);
 });
 
-// Start the server
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-}
-
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
 
-export default app;
+// Handle Vercel serverless function
+export default async (req, res) => {
+  await app(req, res);
+};
+
